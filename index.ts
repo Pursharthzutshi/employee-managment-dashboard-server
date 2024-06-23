@@ -3,6 +3,7 @@ import { ApolloServer } from "apollo-server-express";
 import { PubSub } from 'graphql-subscriptions';
 const typeDefs = require("./typedefs/typeDefs")
 const resolvers = require("./resolvers/resolvers")
+const cors = require('cors'); 
 
 const app: any = express();
 const port = 4000;
@@ -22,6 +23,7 @@ async function startApolloServer() {
 
 startApolloServer()
 
+app.use(cors())
 
 app.listen(port, () => {
     console.log(`${port} is running`);
