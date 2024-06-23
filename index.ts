@@ -25,7 +25,7 @@ const server = new ApolloServer({
 
 async function startApolloServer() {
     await server.start();
-    server.applyMiddleware({ app });
+    server.applyMiddleware({ app,path:"/api"});
 }
 
 startApolloServer()
