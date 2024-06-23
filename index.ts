@@ -1,8 +1,8 @@
 import express, { Express } from 'express';
 import { ApolloServer } from "apollo-server-express";
 import { PubSub } from 'graphql-subscriptions';
-const typeDefs = require("../typedefs/typeDefs")
-const resolvers = require("../resolvers/resolvers")
+const typeDefs = require("./typedefs/typeDefs")
+const resolvers = require("./resolvers/resolvers")
 // import typeDefs from "../server/typeDefs/typeDefs";
 // import resolvers from "../server/resolvers/resolvers";
 
@@ -25,7 +25,7 @@ const server = new ApolloServer({
 
 async function startApolloServer() {
     await server.start();
-    server.applyMiddleware({ app,path:"/api"});
+    server.applyMiddleware({ app});
 }
 
 startApolloServer()
