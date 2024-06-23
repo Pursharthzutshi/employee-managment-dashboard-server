@@ -1,12 +1,15 @@
 import express, { Express } from 'express';
 import { ApolloServer } from "apollo-server-express";
 import { PubSub } from 'graphql-subscriptions';
+import { url } from 'inspector';
 const typeDefs = require("./typedefs/typeDefs")
 const resolvers = require("./resolvers/resolvers")
 const cors = require('cors'); 
 
 const app: any = express();
-app.use(cors())
+app.use(cors({
+    url:"https://employee-managment-dashboard-client.vercel.app",
+}))
 
 const port = 4000;
 
