@@ -6,6 +6,8 @@ const resolvers = require("./resolvers/resolvers")
 const cors = require('cors'); 
 
 const app: any = express();
+app.use(cors())
+
 const port = 4000;
 
 const pubsub = new PubSub()
@@ -23,7 +25,6 @@ async function startApolloServer() {
 
 startApolloServer()
 
-app.use(cors())
 
 app.listen(port, () => {
     console.log(`${port} is running`);
