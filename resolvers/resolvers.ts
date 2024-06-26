@@ -6,9 +6,9 @@ import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps } fro
 require('dotenv').config()
 console.log(process.env)
 
-const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
+const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adminSecretKey } = require("../models/db")
 const secret = crypto.randomBytes(64).toString('hex');
- 
+
 mongoose.connect(`mongodb+srv://${process.env.dbUsername}:${process.env.dbPassword}@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
     // console.log(res);
 })
@@ -64,18 +64,39 @@ export const resolvers = {
 
         },
         // createAdmin
-        createAdminSignUp(parent: undefined, args: { adminSignUpParameters: adminSignUpProps; }) {
+        async createAdminSignUp(parent: undefined, args: { adminSignUpParameters: adminSignUpProps; }) {
             // console.log(args.adminSignUpParameters)
             // if(args.adminSignUpParameters)
-            console.log(args.adminSignUpParameters)
+            console.log(args.adminSignUpParameters.adminSecretKey)
 
+            const checkAdminKey = await adminSecretKey.findOne({ adminSecret: args.adminSignUpParameters.adminSecretKey })
 
+            const checkEmptyFields =  args.adminSignUpParameters.emailId === "" || args.adminSignUpParameters.name === "" ||
+                args.adminSignUpParameters.password === "" 
 
-            adminSignUpInfoTable.insertMany({ ...args.adminSignUpParameters })
-            return {
-                success: true,
-                message: "Admin Sign Up was suscessful"
+            if (checkEmptyFields) {
+                return {
+                    success: false,
+                    message: "Please fill up the details"
+                }
+            } 
+            
+            else if (!checkAdminKey) {
+
+                return {
+                    success: false,
+                    message: "Incorrect admin key"
+                }
+            }else{
+            
+            
+                adminSignUpInfoTable.insertMany({ ...args.adminSignUpParameters })
+                return {
+                    success: true,
+                    message: "Admin Sign Up was suscessful"
+                }
             }
+            
         },
 
         // async showWelcomeLogin(parent:undefined,args:any){
@@ -226,13 +247,7 @@ export const resolvers = {
 
 
     },
-    Subscription: {
-        showAllEmployee: {
-            subscribe: () => {
-                return (PubSub as unknown as PubSubEngine).asyncIterator(`messageAdded`);
-            }
-        },
-    }
+
 }
 
 

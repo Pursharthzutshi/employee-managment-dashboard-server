@@ -104,9 +104,6 @@ showAllAdmin:[adminSignUpTable]
 
 }
 
-type Subscription{
-showAllEmployee:signUpTable
-}
 
 
 input deleteEmployeesTaskInput{
