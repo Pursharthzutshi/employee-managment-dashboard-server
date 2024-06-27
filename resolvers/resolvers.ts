@@ -199,9 +199,6 @@ export const resolvers = {
         },
         createEmployeesTask(parent: undefined, args: { employeesTaskParameters: createEmployeesTaskProps; }) {
 
-            // const checkEmptyFields = args.userSignUpParameters.emailId === "" || args.userSignUpParameters.name === "" ||
-            // args.userSignUpParameters.genderType === "" || args.userSignUpParameters.department === ""
-
             const emptyFieldValues = args.employeesTaskParameters.name === "" || args.employeesTaskParameters.emailId === null ||
                 args.employeesTaskParameters.taskDesc === "" || args.employeesTaskParameters.deadLine === ""
 
