@@ -106,9 +106,6 @@ export const resolvers = {
 
         },
 
-        // async showWelcomeLogin(parent:undefined,args:any){
-
-        // },
 
         async createUserLogin(parent: undefined, args: { userLoginParameters: { emailId: String, password: String }; }) {
 
@@ -240,7 +237,7 @@ export const resolvers = {
             const checkEmptyFields = args.editEmployeesTaskParameter.name !== "" && args.editEmployeesTaskParameter.taskDesc !== "" && args.editEmployeesTaskParameter.deadLine !== ""
 
             await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: { ...args.editEmployeesTaskParameter } })
-    
+
             return [args]
         },
 
