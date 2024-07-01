@@ -32,6 +32,13 @@ export const resolvers = {
             const allAdmin = await adminSignUpInfoTable.find();
             return allAdmin
         },
+        async fetchAdminProfileDetails(parent: undefined, args: { fetchAdminProfileDetailsParameters: any }) {
+            const allAdmin = await adminSignUpInfoTable.find({ uid: args.fetchAdminProfileDetailsParameters.uid });
+            return allAdmin
+        },
+
+
+
     },
     Mutation: {
 
@@ -71,32 +78,32 @@ export const resolvers = {
 
             const checkAdminKey = await adminSecretKey.findOne({ adminSecret: args.adminSignUpParameters.adminSecretKey })
 
-            const checkEmptyFields =  args.adminSignUpParameters.emailId === "" || args.adminSignUpParameters.name === "" ||
-                args.adminSignUpParameters.password === "" 
+            const checkEmptyFields = args.adminSignUpParameters.emailId === "" || args.adminSignUpParameters.name === "" ||
+                args.adminSignUpParameters.password === ""
 
             if (checkEmptyFields) {
                 return {
                     success: false,
                     message: "Please fill up the details"
                 }
-            } 
-            
+            }
+
             else if (!checkAdminKey) {
 
                 return {
                     success: false,
                     message: "Incorrect admin key"
                 }
-            }else{
-            
-            
+            } else {
+
+
                 adminSignUpInfoTable.insertMany({ ...args.adminSignUpParameters })
                 return {
                     success: true,
                     message: "Admin Sign Up was suscessful"
                 }
             }
-            
+
         },
 
         // async showWelcomeLogin(parent:undefined,args:any){
@@ -225,14 +232,15 @@ export const resolvers = {
 
 
         async deleteEmployeesTask(parent: undefined, args: { employeeUidParameter: { uid: String; }; }) {
-            // console.log(parent)
-            console.log(args.employeeUidParameter.uid)
-            const deleteElement = await employeesTaskTable.deleteOne({ uid: args.employeeUidParameter.uid })
+            await employeesTaskTable.deleteOne({ uid: args.employeeUidParameter.uid })
             return [args]
         },
-        async editEmployeesTask(parent: undefined, args: { editEmployeesTaskParameter: { uid: String; }; }) {
-            console.log(args);
-            const updateElement = await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: { ...args.editEmployeesTaskParameter } })
+        async editEmployeesTask(parent: undefined, args: { editEmployeesTaskParameter: any }) {
+
+            const checkEmptyFields = args.editEmployeesTaskParameter.name !== "" && args.editEmployeesTaskParameter.taskDesc !== "" && args.editEmployeesTaskParameter.deadLine !== ""
+
+            await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: { ...args.editEmployeesTaskParameter } })
+    
             return [args]
         },
 
@@ -242,6 +250,14 @@ export const resolvers = {
             return updateStatus
         },
 
+        async updateName(parent: undefined, args: { updateProfileNameParameters: { uid: String, name: String } }) {
+            await adminSignUpInfoTable.updateMany({ uid: args.updateProfileNameParameters.uid }, { $set: { name: args.updateProfileNameParameters.name } })
+            return [args]
+        },
+        async updatePassword(parent: undefined, args: { updateProfilePasswordParameters: { uid: String, password: String } }) {
+            await adminSignUpInfoTable.updateMany({ uid: args.updateProfilePasswordParameters.uid }, { $set: { password: args.updateProfilePasswordParameters.password } })
+            return [args]
+        }
 
     },
 

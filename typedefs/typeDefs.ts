@@ -75,6 +75,7 @@ type LoginResponse{
  message: String!
  token:String
 }
+
 type SignUpResponse{
  success: Boolean!
  message: String
@@ -95,13 +96,18 @@ type AdminLoginResponse{
 
 }
 
+
+input fetchAdminProfileDetailsInput{
+uid:ID
+}
+
 type Query{
 getUser:[signUpTable]
 fetchEmailUsersIds:[signUpTable]
 fetchEmployeesTaskDetails:[employeesTaskTable]
 showAllEmployee:[signUpTable]
 showAllAdmin:[adminSignUpTable]
-
+fetchAdminProfileDetails(fetchAdminProfileDetailsParameters:fetchAdminProfileDetailsInput!):[adminSignUpTable]
 }
 
 
@@ -138,7 +144,21 @@ emailId:String
 type addEmployeeTaskResponse {
 success: Boolean
 message: String
+}
 
+type addEmployeeTaskResponse {
+success: Boolean
+message: String
+}
+
+input updateProfileNameInput{
+uid:ID!
+name:String
+}
+
+input updateProfilePasswordInput{
+uid:ID!
+password:String
 }
 
 type Mutation{
@@ -153,6 +173,9 @@ createEmployeesTask(employeesTaskParameters:createEmployeesTaskInput!):addEmploy
 deleteEmployeesTask(employeeUidParameter:deleteEmployeesTaskInput!):[employeesTaskTable]
 editEmployeesTask(editEmployeesTaskParameter:editEmployeesTaskInput!):[employeesTaskTable]
 updateSignUpStatus(updateSignUpStatusParameter:updateSignUpStatusInput!):[signUpTable]
+
+updateName(updateProfileNameParameters:updateProfileNameInput!):[signUpTable]
+updatePassword(updateProfilePasswordParameters:updateProfilePasswordInput!):[signUpTable]
 
 }
 `
