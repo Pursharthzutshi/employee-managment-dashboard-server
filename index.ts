@@ -4,11 +4,11 @@ import { PubSub } from 'graphql-subscriptions';
 import { url } from 'inspector';
 const typeDefs = require("./typedefs/typeDefs")
 const resolvers = require("./resolvers/resolvers")
-const cors = require('cors'); 
+const cors = require('cors');
 
 const app: any = express();
 app.use(cors({
-    url:"https://employee-managment-dashboard-client.vercel.app",
+    url: "https://employee-managment-dashboard-client.vercel.app",
 }))
 
 const port = 4001;
@@ -23,7 +23,7 @@ const server = new ApolloServer({
 
 async function startApolloServer() {
     await server.start();
-    server.applyMiddleware({ app,path:"/api"});
+    server.applyMiddleware({ app, path: "/api" });
 }
 
 startApolloServer()

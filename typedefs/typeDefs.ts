@@ -161,8 +161,14 @@ uid:ID!
 password:String
 }
 
+input deleteEmployeeAccountInput{
+uid:ID!
+}
+
 type Mutation{
 updateEmployeeOfTheMonth(updateEmployeeOfTheMonthParameters:updateEmployeeOfTheMonthInput!):[signUpTable]
+deleteEmployeeAccount(deleteEmployeeAccountParameters:deleteEmployeeAccountInput!):[signUpTable]
+
 createUserSignUp(userSignUpParameters:createUserSignUpInput!):SignUpResponse!
 createAdminSignUp(adminSignUpParameters:adminSignUpTableInput!):adminSignUpResponse!
 createUserLogin(userLoginParameters:createLoginInput!):LoginResponse!
@@ -176,6 +182,8 @@ updateSignUpStatus(updateSignUpStatusParameter:updateSignUpStatusInput!):[signUp
 
 updateName(updateProfileNameParameters:updateProfileNameInput!):[signUpTable]
 updatePassword(updateProfilePasswordParameters:updateProfilePasswordInput!):[signUpTable]
+
+fetchLoggedInEmployeeAssignedTaskDetails(fetchLoggedInEmployeeAssignedTaskDetailsParameters:fetchLoggedInEmployeeAssignedTaskDetailsInput!):[employeesTaskTable]
 
 }
 `

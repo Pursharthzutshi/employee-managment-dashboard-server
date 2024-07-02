@@ -25,4 +25,11 @@ export type adminSignUpProps = {
     password: String
     status: Boolean
     adminSecretKey: String
-  }
+}
+
+
+export type fetchLoggedInEmployeeAssignedTaskDetailsProps={
+    fetchLoggedInEmployeeAssignedTaskDetailsParameters: any
+    uid: String
+    emailId: String
+}

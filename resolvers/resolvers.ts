@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 import { PubSub, PubSubEngine } from "graphql-subscriptions";
-import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps } from "../resolvers-types/resolvers-type";
+import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, fetchLoggedInEmployeeAssignedTaskDetailsProps } from "../resolvers-types/resolvers-type";
 require('dotenv').config()
 console.log(process.env)
 
@@ -110,7 +110,7 @@ export const resolvers = {
         async createUserLogin(parent: undefined, args: { userLoginParameters: { emailId: String, password: String }; }) {
 
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
-
+            console.log(args)
             const user = await employeesAccountInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
 
             console.log(user)
@@ -118,7 +118,7 @@ export const resolvers = {
 
                 return {
                     success: false,
-                    message: 'User Email Id does not exists',
+                    message: 'Employee Email Id in not filled / does not exists',
                 }
 
             } else if (user.password !== args.userLoginParameters.password) {
@@ -149,15 +149,14 @@ export const resolvers = {
         },
         async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }) {
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.adminLoginParameters.emailId })
-            console.log(args)
+
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
 
-            console.log(admin)
             if (!admin) {
 
                 return {
                     success: false,
-                    message: 'Admin Email Id does not exists',
+                    message: 'Admin Email Id in not filled / does not exists',
 
                 }
             } else if (admin.password !== args.adminLoginParameters.password) {
@@ -200,6 +199,12 @@ export const resolvers = {
             const updateEmployeeOfTheMonthStatus = await employeesAccountInfoTable.updateOne({ uid: args.updateEmployeeOfTheMonthParameters.uid }, { $set: { employeeOfTheMonth: args.updateEmployeeOfTheMonthParameters.employeeOfTheMonth } })
 
             return updateEmployeeOfTheMonthStatus
+        },
+
+        async deleteEmployeeAccount(parent: undefined, args: { deleteEmployeeAccountParameters: { uid: String }; }) {
+            console.log(args)
+            const deleteEmployee = await employeesAccountInfoTable.deleteOne({ uid: args.deleteEmployeeAccountParameters.uid })
+            return [args];
         },
         createEmployeesTask(parent: undefined, args: { employeesTaskParameters: createEmployeesTaskProps; }) {
 
@@ -254,9 +259,30 @@ export const resolvers = {
         async updatePassword(parent: undefined, args: { updateProfilePasswordParameters: { uid: String, password: String } }) {
             await adminSignUpInfoTable.updateMany({ uid: args.updateProfilePasswordParameters.uid }, { $set: { password: args.updateProfilePasswordParameters.password } })
             return [args]
+        },
+
+        async fetchLoggedInEmployeeAssignedTaskDetails(parent: undefined, args: fetchLoggedInEmployeeAssignedTaskDetailsProps) {
+            console.log(args)
+            const fetchLoggedInEmployeeTask = await employeesAccountInfoTable.findOne({ uid: args.fetchLoggedInEmployeeAssignedTaskDetailsParameters.uid })
+            // console.log(fetchLoggedInEmployeeTask.emailId)
+
+            const findFetchedLoggedInEmailId = await employeesTaskTable.find({})
+            const assignedTasks: String[] = []
+
+            await findFetchedLoggedInEmailId.map(async (data: any) => {
+                await data.emailId.map((val: String) => {
+                    if (val === fetchLoggedInEmployeeTask.emailId) {
+                        console.log(data)
+                        assignedTasks.push(data)
+                    }
+                    // console.log(assignedTasks)
+                })
+            })
+            return assignedTasks
         }
 
     },
+
 
 }
 
