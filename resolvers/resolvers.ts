@@ -216,10 +216,10 @@ export const resolvers = {
                     success: false,
                     message: 'Please Fill Up the task details',
                 }
-            } else if (args.employeesTaskParameters.taskDesc.length < 10 || args.employeesTaskParameters.taskDesc.length > 50) {
+            } else if (args.employeesTaskParameters.taskDesc.length < 10 ) {
                 return {
                     success: false,
-                    message: 'Task description should be between 10 to 50 word',
+                    message: 'Task description should be greater than 10',
                 }
             } else {
                 employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
