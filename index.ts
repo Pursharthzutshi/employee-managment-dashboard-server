@@ -11,7 +11,7 @@ app.use(cors({
     url: "https://employee-managment-dashboard-client.vercel.app",
 }))
 
-const port = 4002;
+const port = 4003;
 
 const pubsub = new PubSub()
 

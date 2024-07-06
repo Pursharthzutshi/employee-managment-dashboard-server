@@ -137,15 +137,7 @@ uid:ID!
 emailId:String
 }
 
-type addEmployeeTaskResponse {
-success: Boolean
-message: String
-}
 
-type addEmployeeTaskResponse {
-success: Boolean
-message: String
-}
 
 input updateProfileNameInput{
 uid:ID!
@@ -163,13 +155,25 @@ uid:ID!
 
 type SignUpResponse{
 AddedSignUpData:signUpTable
-  success: Boolean!
-  message: String
+success: Boolean!
+message: String
+}
+
+type addEmployeeTaskResponse {
+addNewTaskData:employeesTaskTable
+success: Boolean!
+message: String
 }
 
 type deleletEmployeeAccountResponse{
 uid:ID!
 status:Boolean
+}
+
+type updateNameResponse{
+updateNameData:signUpTable
+status:Boolean
+message:String
 }
 
 type Mutation{
@@ -189,7 +193,7 @@ deleteEmployeesTask(employeeUidParameter:deleteEmployeesTaskInput!):[employeesTa
 editEmployeesTask(editEmployeesTaskParameter:editEmployeesTaskInput!):[employeesTaskTable]
 updateSignUpStatus(updateSignUpStatusParameter:updateSignUpStatusInput!):[signUpTable]
 
-updateName(updateProfileNameParameters:updateProfileNameInput!):[signUpTable]
+updateName(updateProfileNameParameters:updateProfileNameInput!):updateNameResponse!
 updatePassword(updateProfilePasswordParameters:updateProfilePasswordInput!):[signUpTable]
 
 fetchLoggedInEmployeeAssignedTaskDetails(fetchLoggedInEmployeeAssignedTaskDetailsParameters:fetchLoggedInEmployeeAssignedTaskDetailsInput!):[employeesTaskTable]

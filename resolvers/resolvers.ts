@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 import { PubSub, PubSubEngine } from "graphql-subscriptions";
-import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, fetchLoggedInEmployeeAssignedTaskDetailsProps } from "../resolvers-types/resolvers-type";
+import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
 require('dotenv').config()
 console.log(process.env)
 
@@ -32,7 +32,8 @@ export const resolvers = {
             const allAdmin = await adminSignUpInfoTable.find();
             return allAdmin
         },
-        async fetchAdminProfileDetails(parent: undefined, args: { fetchAdminProfileDetailsParameters: any }) {
+        async fetchAdminProfileDetails(parent: undefined, args: { fetchAdminProfileDetailsParameters: FetchAdminProfileDetailsParametersProps }) {
+            console.log(args)
             const allAdmin = await adminSignUpInfoTable.find({ uid: args.fetchAdminProfileDetailsParameters.uid });
             return allAdmin
         },
@@ -51,20 +52,20 @@ export const resolvers = {
 
             if (checkEmptyFields) {
                 return {
-                    AddedSignUpData:null,
+                    AddedSignUpData: null,
                     success: false,
                     message: "Please Fill Up the form"
                 }
             } else if (existingEmailId) {
                 return {
-                    AddedSignUpData:null,
+                    AddedSignUpData: null,
                     success: false,
                     message: "Email ID already Exists"
                 }
             } else {
                 employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
                 return {
-                    AddedSignUpData:{...args.userSignUpParameters},
+                    AddedSignUpData: { ...args.userSignUpParameters },
                     success: true,
                     message: "Sign Up was suscessful"
                 }
@@ -208,9 +209,9 @@ export const resolvers = {
             console.log(args)
             const deleteEmployee = await employeesAccountInfoTable.deleteOne({ uid: args.deleteEmployeeAccountParameters.uid })
 
-            return{
-                status:true,
-                uid:args.deleteEmployeeAccountParameters.uid
+            return {
+                status: true,
+                uid: args.deleteEmployeeAccountParameters.uid
             }
             // return [args];
         },
@@ -219,22 +220,26 @@ export const resolvers = {
             const emptyFieldValues = args.employeesTaskParameters.name === "" || args.employeesTaskParameters.emailId === null ||
                 args.employeesTaskParameters.taskDesc === "" || args.employeesTaskParameters.deadLine === ""
 
+            console.log(args)
             if (emptyFieldValues) {
                 return {
                     success: false,
                     message: 'Please Fill Up the task details',
+                    addNewTaskData: null
                 }
-            } else if (args.employeesTaskParameters.taskDesc.length < 10 ) {
+            } else if (args.employeesTaskParameters.taskDesc.length < 10) {
                 return {
                     success: false,
                     message: 'Task description should be greater than 10',
+                    addNewTaskData: null
                 }
             } else {
                 employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
                 return {
                     success: true,
                     message: 'Task Added Successfully',
-
+                    addNewTaskData: { ...args.employeesTaskParameters },
+                    // addNewTaskData: {args}
                 }
             }
 
@@ -245,11 +250,36 @@ export const resolvers = {
             await employeesTaskTable.deleteOne({ uid: args.employeeUidParameter.uid })
             return [args]
         },
-        async editEmployeesTask(parent: undefined, args: { editEmployeesTaskParameter: any }) {
 
-            const checkEmptyFields = args.editEmployeesTaskParameter.name !== "" && args.editEmployeesTaskParameter.taskDesc !== "" && args.editEmployeesTaskParameter.deadLine !== ""
+        async editEmployeesTask(parent: undefined, args: { editEmployeesTaskParameter: updateTaskFieldsProps }) {
 
-            await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: { ...args.editEmployeesTaskParameter } })
+            console.log(args);
+
+            const checkEmptyFields = args.editEmployeesTaskParameter.name !== "" && args.editEmployeesTaskParameter.taskDesc !== ""
+                && args.editEmployeesTaskParameter.deadLine !== "" && !args.editEmployeesTaskParameter.emailId  
+
+            const updateFields: updateTaskFieldsProps = {}
+
+            if (checkEmptyFields) {
+                return []
+            }
+
+            if (args.editEmployeesTaskParameter.name !== "") {
+                updateFields.name = args.editEmployeesTaskParameter.name
+            }
+            if (args.editEmployeesTaskParameter.taskDesc !== "" && args.editEmployeesTaskParameter.taskDesc.length > 10) {
+                updateFields.taskDesc = args.editEmployeesTaskParameter.taskDesc
+            }
+            if (args.editEmployeesTaskParameter.deadLine !== "") {
+                updateFields.deadLine = args.editEmployeesTaskParameter.deadLine
+            }
+            if (Array.isArray(args.editEmployeesTaskParameter.emailId) && args.editEmployeesTaskParameter.emailId.length > 0) {
+                updateFields.emailId = args.editEmployeesTaskParameter.emailId;
+            }
+
+            if (Object.keys(updateFields).length > 0) {
+                await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: updateFields })
+            }
 
             return [args]
         },
@@ -261,23 +291,40 @@ export const resolvers = {
         },
 
         async updateName(parent: undefined, args: { updateProfileNameParameters: { uid: String, name: String } }) {
-            await adminSignUpInfoTable.updateMany({ uid: args.updateProfileNameParameters.uid }, { $set: { name: args.updateProfileNameParameters.name } })
-            return [args]
+            console.log(args)
+            if (args.updateProfileNameParameters.name === "") {
+                return {
+                    updateNameData: null,
+                    status: false,
+                    message: "Please Enter Name"
+                }
+            } else {
+                await adminSignUpInfoTable.updateMany({ uid: args.updateProfileNameParameters.uid }, { $set: { name: args.updateProfileNameParameters.name } })
+                return {
+                    updateNameData: {...args.updateProfileNameParameters},
+                    status: true,
+                    message: "Name Updated"
+                }
+            }
         },
         async updatePassword(parent: undefined, args: { updateProfilePasswordParameters: { uid: String, password: String } }) {
+            console.log(args)
             await adminSignUpInfoTable.updateMany({ uid: args.updateProfilePasswordParameters.uid }, { $set: { password: args.updateProfilePasswordParameters.password } })
             return [args]
         },
 
         async fetchLoggedInEmployeeAssignedTaskDetails(parent: undefined, args: fetchLoggedInEmployeeAssignedTaskDetailsProps) {
-            console.log(args)
+            // console.log(args)
             const fetchLoggedInEmployeeTask = await employeesAccountInfoTable.findOne({ uid: args.fetchLoggedInEmployeeAssignedTaskDetailsParameters.uid })
             // console.log(fetchLoggedInEmployeeTask.emailId)
 
             const findFetchedLoggedInEmailId = await employeesTaskTable.find({})
-            const assignedTasks: String[] = []
+            const assignedTasks: fetchLoggedInEmployeeAssignedTaskDetailsParametersType[] = []
 
-            await findFetchedLoggedInEmailId.map(async (data: any) => {
+            // console.log(findFetchedLoggedInEmailId)
+
+            await findFetchedLoggedInEmailId.map(async (data: fetchLoggedInEmployeeAssignedTaskDetailsParametersType) => {
+                console.log(data)
                 await data.emailId.map((val: String) => {
                     if (val === fetchLoggedInEmployeeTask.emailId) {
                         console.log(data)
