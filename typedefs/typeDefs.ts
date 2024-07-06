@@ -76,10 +76,6 @@ type LoginResponse{
  token:String
 }
 
-type SignUpResponse{
- success: Boolean!
- message: String
-}
 
 type adminSignUpResponse{
  success: Boolean!
@@ -165,12 +161,25 @@ input deleteEmployeeAccountInput{
 uid:ID!
 }
 
+type SignUpResponse{
+AddedSignUpData:signUpTable
+  success: Boolean!
+  message: String
+}
+
+type deleletEmployeeAccountResponse{
+uid:ID!
+status:Boolean
+}
+
 type Mutation{
 updateEmployeeOfTheMonth(updateEmployeeOfTheMonthParameters:updateEmployeeOfTheMonthInput!):[signUpTable]
-deleteEmployeeAccount(deleteEmployeeAccountParameters:deleteEmployeeAccountInput!):[signUpTable]
+deleteEmployeeAccount(deleteEmployeeAccountParameters:deleteEmployeeAccountInput!):deleletEmployeeAccountResponse!
 
 createUserSignUp(userSignUpParameters:createUserSignUpInput!):SignUpResponse!
+
 createAdminSignUp(adminSignUpParameters:adminSignUpTableInput!):adminSignUpResponse!
+
 createUserLogin(userLoginParameters:createLoginInput!):LoginResponse!
 createAdminLogin(adminLoginParameters:createAdminLoginInput!):AdminLoginResponse!
 

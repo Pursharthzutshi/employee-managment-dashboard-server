@@ -51,17 +51,20 @@ export const resolvers = {
 
             if (checkEmptyFields) {
                 return {
+                    AddedSignUpData:null,
                     success: false,
                     message: "Please Fill Up the form"
                 }
             } else if (existingEmailId) {
                 return {
+                    AddedSignUpData:null,
                     success: false,
                     message: "Email ID already Exists"
                 }
             } else {
                 employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
                 return {
+                    AddedSignUpData:{...args.userSignUpParameters},
                     success: true,
                     message: "Sign Up was suscessful"
                 }
@@ -204,7 +207,12 @@ export const resolvers = {
         async deleteEmployeeAccount(parent: undefined, args: { deleteEmployeeAccountParameters: { uid: String }; }) {
             console.log(args)
             const deleteEmployee = await employeesAccountInfoTable.deleteOne({ uid: args.deleteEmployeeAccountParameters.uid })
-            return [args];
+
+            return{
+                status:true,
+                uid:args.deleteEmployeeAccountParameters.uid
+            }
+            // return [args];
         },
         createEmployeesTask(parent: undefined, args: { employeesTaskParameters: createEmployeesTaskProps; }) {
 
