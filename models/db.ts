@@ -1,5 +1,5 @@
 
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const employeesAccountInfoSchema = new mongoose.Schema({
     uid: String,
@@ -37,6 +37,15 @@ const employeesTaskSchema = new mongoose.Schema({
     assignedBy: String
 })
 
+const employeesLeaveDetailsSchema = new mongoose.Schema({
+    uid: String,
+    employeeName:String,
+    employeeLeaveApplicationUid:String,
+    date: String,
+    leaveReason: String,
+    leaveStatus:Boolean
+})
+
 // type usersSignUpInfoTableProps = {
 //     usersSignUpInfoTable=()=> void
 // }
@@ -49,4 +58,7 @@ const adminSecretKey = mongoose.model("adminSecretKeyInfo", adminSecretKeySchema
 
 const employeesTaskTable = mongoose.model("employeesTaskInfo", employeesTaskSchema, "employeesTaskInfo")
 
-module.exports = { employeesAccountInfoTable, adminSignUpInfoTable, adminSecretKey, employeesTaskTable }
+const employeeLeaveTable = mongoose.model("employeeLeaveInfo", employeesLeaveDetailsSchema, "employeeLeaveInfo")
+
+
+module.exports = { employeesAccountInfoTable, adminSignUpInfoTable, adminSecretKey, employeesTaskTable, employeeLeaveTable }

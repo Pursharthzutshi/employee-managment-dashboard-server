@@ -29,6 +29,38 @@ taskDesc:String
 deadLine:String
 }
 
+
+type employeeLeaveInfoTable{
+uid:ID!
+date: String
+employeeName:String
+leaveReason: String
+employeeLeaveApplicationUid:ID!
+leaveStatus:Boolean
+}
+
+input updateEmployeeLeaveStatusInput{
+uid:ID!
+employeeLeaveApplicationUid:ID!
+leaveStatus:Boolean
+}
+  
+type insertEmployeesLeaveDetailsResponse {
+employeeLeaveData:[employeeLeaveInfoTable]
+success:Boolean
+message:String
+}
+
+input insertEmployeesLeaveDetailsInput{
+uid:ID!
+date: String
+leaveReason: String
+employeeLeaveApplicationUid:ID!
+leaveStatus:Boolean
+}
+
+
+
 input createUserSignUpInput{
 uid:ID!
 name:String
@@ -97,6 +129,10 @@ input fetchAdminProfileDetailsInput{
 uid:ID
 }
 
+input showLoggedInEmployeesLeaveDetailsDataInput{
+uid:ID!
+}
+
 type Query{
 getUser:[signUpTable]
 fetchEmailUsersIds:[signUpTable]
@@ -104,6 +140,8 @@ fetchEmployeesTaskDetails:[employeesTaskTable]
 showAllEmployee:[signUpTable]
 showAllAdmin:[adminSignUpTable]
 fetchAdminProfileDetails(fetchAdminProfileDetailsParameters:fetchAdminProfileDetailsInput!):[adminSignUpTable]
+fetchEmployeesLeaveDetails:[employeeLeaveInfoTable]
+showLoggedInEmployeesLeaveDetailsData(showLoggedInEmployeesLeaveDetailsDataParameters:showLoggedInEmployeesLeaveDetailsDataInput!):[employeeLeaveInfoTable]
 }
 
 
@@ -197,6 +235,10 @@ updateName(updateProfileNameParameters:updateProfileNameInput!):updateNameRespon
 updatePassword(updateProfilePasswordParameters:updateProfilePasswordInput!):[signUpTable]
 
 fetchLoggedInEmployeeAssignedTaskDetails(fetchLoggedInEmployeeAssignedTaskDetailsParameters:fetchLoggedInEmployeeAssignedTaskDetailsInput!):[employeesTaskTable]
+
+insertEmployeesLeaveDetails(insertEmployeesLeaveDetailsParameters:insertEmployeesLeaveDetailsInput!):insertEmployeesLeaveDetailsResponse!
+
+updateEmployeeLeaveStatus(updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusInput!):[employeeLeaveInfoTable]
 
 }
 `

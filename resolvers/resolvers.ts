@@ -6,7 +6,7 @@ import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, Fetc
 require('dotenv').config()
 console.log(process.env)
 
-const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adminSecretKey } = require("../models/db")
+const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adminSecretKey, employeeLeaveTable } = require("../models/db")
 const secret = crypto.randomBytes(64).toString('hex');
 
 mongoose.connect(`mongodb+srv://${process.env.dbUsername}:${process.env.dbPassword}@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
@@ -38,6 +38,17 @@ export const resolvers = {
             return allAdmin
         },
 
+        async fetchEmployeesLeaveDetails(parent: undefined, args: { fetchAdminProfileDetailsParameters: FetchAdminProfileDetailsParametersProps }) {
+            const employeeLeaveDetails = await employeeLeaveTable.find({})
+            console.log(employeeLeaveDetails)
+            return employeeLeaveDetails
+        },
+        async showLoggedInEmployeesLeaveDetailsData(parent: undefined, args: { showLoggedInEmployeesLeaveDetailsDataParameters: any }) {
+            console.log(args)
+            const employeeLeaveDetails = await employeeLeaveTable.find({ uid: args.showLoggedInEmployeesLeaveDetailsDataParameters.uid }).sort()
+            // console.log(employeeLeaveDetails)
+            return employeeLeaveDetails
+        }
 
 
     },
@@ -256,7 +267,7 @@ export const resolvers = {
             console.log(args);
 
             const checkEmptyFields = args.editEmployeesTaskParameter.name !== "" && args.editEmployeesTaskParameter.taskDesc !== ""
-                && args.editEmployeesTaskParameter.deadLine !== "" && !args.editEmployeesTaskParameter.emailId  
+                && args.editEmployeesTaskParameter.deadLine !== "" && !args.editEmployeesTaskParameter.emailId
 
             const updateFields: updateTaskFieldsProps = {}
 
@@ -301,7 +312,7 @@ export const resolvers = {
             } else {
                 await adminSignUpInfoTable.updateMany({ uid: args.updateProfileNameParameters.uid }, { $set: { name: args.updateProfileNameParameters.name } })
                 return {
-                    updateNameData: {...args.updateProfileNameParameters},
+                    updateNameData: { ...args.updateProfileNameParameters },
                     status: true,
                     message: "Name Updated"
                 }
@@ -334,6 +345,46 @@ export const resolvers = {
                 })
             })
             return assignedTasks
+        },
+        // uid: uuidv4(),
+        // date: applyDate,
+        // leaveReason: leaveReason,
+        // leaveStatus: true
+
+        async insertEmployeesLeaveDetails(parent: undefined, args: any) {
+            console.log(args);
+
+            const checkEmptyFields = args.insertEmployeesLeaveDetailsParameters.date === "" || args.insertEmployeesLeaveDetailsParameters.leaveReason === "" ||
+                args.insertEmployeesLeaveDetailsParameters.leaveStatus === ""
+
+            const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.insertEmployeesLeaveDetailsParameters.uid })
+
+            console.log(findEmployeeName[0].name);
+            if (checkEmptyFields) {
+                return {
+                    employeeLeaveData: null,
+                    success: false,
+                    message: "Please fill up the leave form"
+                }
+            } else {
+                employeeLeaveTable.insertMany({ ...args.insertEmployeesLeaveDetailsParameters, employeeName: findEmployeeName[0].name })
+                return {
+                    employeeLeaveData: [{ ...args.insertEmployeesLeaveDetailsParameters, employeeName: findEmployeeName[0].name }],
+                    success: true,
+                    message: "Leave Sent Successfully"
+                }
+            }
+        },
+
+        async updateEmployeeLeaveStatus(parent: undefined, args: any) {
+            console.log(args);
+
+            const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })
+            console.log(findEmployeeName)
+            await employeeLeaveTable.updateOne({ uid: args.updateEmployeeLeaveStatusParameters.uid, employeeLeaveApplicationUid: args.updateEmployeeLeaveStatusParameters.employeeLeaveApplicationUid }, { $set: { leaveStatus: args.updateEmployeeLeaveStatusParameters.leaveStatus } })
+
+
+            return [args]
         }
 
     },
