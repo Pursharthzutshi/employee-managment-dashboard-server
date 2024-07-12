@@ -162,10 +162,11 @@ export const resolvers = {
 
 
         },
-        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }) {
+        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; },context:any) {
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.adminLoginParameters.emailId })
 
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
+            const { res } = context;
 
             if (!admin) {
 
@@ -190,6 +191,9 @@ export const resolvers = {
                     secret,
                     { expiresIn: "5h" }
                 );
+
+                res.cookie('token', token, { httpOnly: true, maxAge: 5 * 60 * 60 * 1000 }); // 5 hours in milliseconds
+
                 return {
                     uid: uid,
                     name: admin.name,
@@ -379,12 +383,16 @@ export const resolvers = {
         async updateEmployeeLeaveStatus(parent: undefined, args: any) {
             console.log(args);
 
-            const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })
-            console.log(findEmployeeName)
-            await employeeLeaveTable.updateOne({ uid: args.updateEmployeeLeaveStatusParameters.uid, employeeLeaveApplicationUid: args.updateEmployeeLeaveStatusParameters.employeeLeaveApplicationUid }, { $set: { leaveStatus: args.updateEmployeeLeaveStatusParameters.leaveStatus } })
+            // const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })
+            // console.log(findEmployeeName)
+            await employeeLeaveTable.updateOne({ uid: args.updateEmployeeLeaveStatusParameters.uid, employeeLeaveApplicationUid: args.updateEmployeeLeaveStatusParameters.employeeLeaveApplicationUid }, { $set: { leaveStatus: args.updateEmployeeLeaveStatusParameters.leaveStatus,leaveApprovedButtonsStatus: args.updateEmployeeLeaveStatusParameters.leaveApprovedButtonsStatus} })
 
 
-            return [args]
+            return {
+                updatedEmployeeLeaveStatusData: [{ ...args.updateEmployeeLeaveStatusParameters }],
+                success: true,
+                message: "Updated Status Successfully"
+            }
         }
 
     },

@@ -36,12 +36,14 @@ date: String
 employeeName:String
 leaveReason: String
 employeeLeaveApplicationUid:ID!
+leaveApprovedButtonsStatus:Boolean
 leaveStatus:Boolean
 }
 
 input updateEmployeeLeaveStatusInput{
 uid:ID!
 employeeLeaveApplicationUid:ID!
+leaveApprovedButtonsStatus:Boolean
 leaveStatus:Boolean
 }
   
@@ -56,6 +58,7 @@ uid:ID!
 date: String
 leaveReason: String
 employeeLeaveApplicationUid:ID!
+leaveApprovedButtonsStatus:Boolean
 leaveStatus:Boolean
 }
 
@@ -214,6 +217,12 @@ status:Boolean
 message:String
 }
 
+type updateEmployeeLeaveStatusResponse{
+updatedEmployeeLeaveStatusData:[employeeLeaveInfoTable]
+success:Boolean
+message:String
+}
+
 type Mutation{
 updateEmployeeOfTheMonth(updateEmployeeOfTheMonthParameters:updateEmployeeOfTheMonthInput!):[signUpTable]
 deleteEmployeeAccount(deleteEmployeeAccountParameters:deleteEmployeeAccountInput!):deleletEmployeeAccountResponse!
@@ -238,7 +247,7 @@ fetchLoggedInEmployeeAssignedTaskDetails(fetchLoggedInEmployeeAssignedTaskDetail
 
 insertEmployeesLeaveDetails(insertEmployeesLeaveDetailsParameters:insertEmployeesLeaveDetailsInput!):insertEmployeesLeaveDetailsResponse!
 
-updateEmployeeLeaveStatus(updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusInput!):[employeeLeaveInfoTable]
+updateEmployeeLeaveStatus(updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusInput!):updateEmployeeLeaveStatusResponse!
 
 }
 `

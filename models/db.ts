@@ -43,7 +43,8 @@ const employeesLeaveDetailsSchema = new mongoose.Schema({
     employeeLeaveApplicationUid:String,
     date: String,
     leaveReason: String,
-    leaveStatus:Boolean
+    leaveStatus:Boolean,
+    leaveApprovedButtonsStatus:Boolean
 })
 
 // type usersSignUpInfoTableProps = {
