@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 import { PubSub, PubSubEngine } from "graphql-subscriptions";
-import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
+import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, showLoggedInEmployeesLeaveDetailsDataParametersProps, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
 require('dotenv').config()
 console.log(process.env)
 
@@ -43,7 +43,7 @@ export const resolvers = {
             console.log(employeeLeaveDetails)
             return employeeLeaveDetails
         },
-        async showLoggedInEmployeesLeaveDetailsData(parent: undefined, args: { showLoggedInEmployeesLeaveDetailsDataParameters: any }) {
+        async showLoggedInEmployeesLeaveDetailsData(parent: undefined, args: { showLoggedInEmployeesLeaveDetailsDataParameters: showLoggedInEmployeesLeaveDetailsDataParametersProps }) {
             console.log(args)
             const employeeLeaveDetails = await employeeLeaveTable.find({ uid: args.showLoggedInEmployeesLeaveDetailsDataParameters.uid }).sort()
             // console.log(employeeLeaveDetails)
@@ -322,7 +322,7 @@ export const resolvers = {
                 }
             }
         },
-        async updatePassword(parent: undefined, args: { updateProfilePasswordParameters: { uid: String, password: String } }) {
+        async updatePassword(parent: undefined, args: { updateProfilePasswordParameters: { uid: string, password: string } }) {
             console.log(args)
             await adminSignUpInfoTable.updateMany({ uid: args.updateProfilePasswordParameters.uid }, { $set: { password: args.updateProfilePasswordParameters.password } })
             return [args]
@@ -350,12 +350,8 @@ export const resolvers = {
             })
             return assignedTasks
         },
-        // uid: uuidv4(),
-        // date: applyDate,
-        // leaveReason: leaveReason,
-        // leaveStatus: true
 
-        async insertEmployeesLeaveDetails(parent: undefined, args: any) {
+        async insertEmployeesLeaveDetails(parent: undefined, args: insertEmployeesLeaveDetailsProps) {
             console.log(args);
 
             const checkEmptyFields = args.insertEmployeesLeaveDetailsParameters.date === "" || args.insertEmployeesLeaveDetailsParameters.leaveReason === "" ||
@@ -380,7 +376,7 @@ export const resolvers = {
             }
         },
 
-        async updateEmployeeLeaveStatus(parent: undefined, args: any) {
+        async updateEmployeeLeaveStatus(parent: undefined, args: updateEmployeeLeaveStatusProps) {
             console.log(args);
 
             // const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })

@@ -60,3 +60,37 @@ export type  FetchAdminProfileDetailsParametersProps = {
 export type findFetchedLoggedInEmailIdProps = {
     emailId:String
 }
+
+
+export type insertEmployeesLeaveDetailsParametersProps = {
+    date: string
+    leaveReason: string
+    leaveStatus: string
+    uid: string
+}
+
+
+export type insertEmployeesLeaveDetailsProps = {
+    insertEmployeesLeaveDetailsParameters: insertEmployeesLeaveDetailsParametersProps
+}
+
+export type showLoggedInEmployeesLeaveDetailsDataParametersProps = {
+    uid:string
+}
+
+export type updateEmployeeLeaveStatusProps = {
+    updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusParametersType
+}
+
+export type updateEmployeeLeaveStatusParametersType={
+    updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusProps
+    uid:string
+    employeeLeaveApplicationUid:string
+    leaveStatus:boolean
+    leaveApprovedButtonsStatus:boolean
+
+}
+
+
+// const checkEmptyFields = args.insertEmployeesLeaveDetailsParameters.date === "" || args.insertEmployeesLeaveDetailsParameters.leaveReason === "" ||
+// args.insertEmployeesLeaveDetailsParameters.leaveStatus === ""
