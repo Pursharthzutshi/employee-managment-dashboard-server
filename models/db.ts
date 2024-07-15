@@ -12,6 +12,18 @@ const employeesAccountInfoSchema = new mongoose.Schema({
     employeeOfTheMonth: Boolean
 })
 
+
+const employeesAccountInfoArchiveSchema = new mongoose.Schema({
+    uid: String,
+    name: String,
+    emailId: String,
+    password: String,
+    genderType: String,
+    status: Boolean,
+    department: String,
+    employeeOfTheMonth: Boolean
+})
+
 const adminSignUpInfoSchema = new mongoose.Schema({
     uid: String,
     name: String,
@@ -39,12 +51,12 @@ const employeesTaskSchema = new mongoose.Schema({
 
 const employeesLeaveDetailsSchema = new mongoose.Schema({
     uid: String,
-    employeeName:String,
-    employeeLeaveApplicationUid:String,
+    employeeName: String,
+    employeeLeaveApplicationUid: String,
     date: String,
     leaveReason: String,
-    leaveStatus:Boolean,
-    leaveApprovedButtonsStatus:Boolean
+    leaveStatus: Boolean,
+    leaveApprovedButtonsStatus: Boolean
 })
 
 // type usersSignUpInfoTableProps = {
@@ -52,6 +64,8 @@ const employeesLeaveDetailsSchema = new mongoose.Schema({
 // }
 
 const employeesAccountInfoTable = mongoose.model("employeesAccountInfoTable", employeesAccountInfoSchema, "employeesAccountInfoTable")
+
+const employeesAccountInfoArchiveTable = mongoose.model("employeesAccountInfoArchiveTable", employeesAccountInfoArchiveSchema, "employeesAccountInfoArchiveTable")
 
 const adminSignUpInfoTable = mongoose.model("adminSignUpInfo", adminSignUpInfoSchema, "adminSignUpInfoInfo")
 
@@ -62,4 +76,4 @@ const employeesTaskTable = mongoose.model("employeesTaskInfo", employeesTaskSche
 const employeeLeaveTable = mongoose.model("employeeLeaveInfo", employeesLeaveDetailsSchema, "employeeLeaveInfo")
 
 
-module.exports = { employeesAccountInfoTable, adminSignUpInfoTable, adminSecretKey, employeesTaskTable, employeeLeaveTable }
+module.exports = { employeesAccountInfoTable, adminSignUpInfoTable, adminSecretKey, employeesTaskTable, employeeLeaveTable, employeesAccountInfoArchiveTable }

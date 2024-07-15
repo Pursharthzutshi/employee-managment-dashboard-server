@@ -1,30 +1,31 @@
 export type createUserSignUpProps = {
-    uid: String
-    name: String
-    emailId: String
-    password: String
-    genderType: String
-    status: Boolean
-    department: String
-    employeeOfTheMonth: Boolean
+    uid: string
+    name: string
+    emailId: string
+    password: string
+    genderType: string
+    status: boolean
+    department: string
+    employeeOfTheMonth: boolean
+    reTypePassword:string
 }
 
 
 export type createEmployeesTaskProps = {
-    uid: String
-    name: String
-    emailId: [String]
-    taskDesc: String
-    deadLine: String
+    uid: string
+    name: string
+    emailId: [string]
+    taskDesc: string
+    deadLine: string
 }
 
 export type adminSignUpProps = {
-    uid: String
-    name: String
-    emailId: String
-    password: String
-    status: Boolean
-    adminSecretKey: String
+    uid: string
+    name: string
+    emailId: string
+    password: string
+    status: boolean
+    adminSecretKey: string
 }
 
 export type fetchLoggedInEmployeeAssignedTaskDetailsParametersType = {
@@ -58,7 +59,7 @@ export type  FetchAdminProfileDetailsParametersProps = {
 
 
 export type findFetchedLoggedInEmailIdProps = {
-    emailId:String
+    emailId:string
 }
 
 
