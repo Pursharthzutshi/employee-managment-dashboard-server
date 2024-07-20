@@ -1,25 +1,25 @@
 
-const { ApolloServer } = require('apollo-server-express');
-const { createServer } = require('http');
-const { WebSocketServer } = require('ws');
-const { useServer } = require('graphql-ws/lib/use/ws');
-const { makeExecutableSchema } = require('@graphql-tools/schema');
-const { execute, subscribe } = require('graphql');
-const typeDefs = require('./typedefs/typeDefs');
-const resolvers = require('./resolvers/resolvers');
-const { PubSub } = require('graphql-subscriptions');
+let { ApolloServer } = require('apollo-server-express');
+let { createServer } = require('http');
+let { WebSocketServer } = require('ws');
+let { useServer } = require('graphql-ws/lib/use/ws');
+let { makeExecutableSchema } = require('@graphql-tools/schema');
+let { execute, subscribe } = require('graphql');
+let typeDefs = require('./typedefs/typeDefs');
+let resolvers = require('./resolvers/resolvers');
+let { PubSub } = require('graphql-subscriptions');
 
 
-const pubsub = new PubSub();
-const schema = makeExecutableSchema({ typeDefs, resolvers });
+let pubsub = new PubSub();
+let schema = makeExecutableSchema({ typeDefs, resolvers });
 
 let express = require("express")
-const app: any = express();
+let app = express();
 
-const httpServer = createServer(app);
-const cors = require("cors")
+let httpServer = createServer(app);
+let cors = require("cors")
 
-const apolloServer = new ApolloServer({
+let apolloServer = new ApolloServer({
     schema,
     context: ({ req, res }:{req:Express.Request,res:Express.Response}) => ({ req, res, pubsub }),
 });
@@ -31,7 +31,7 @@ async function startApolloServer() {
     await apolloServer.start();
     apolloServer.applyMiddleware({ app });
 
-    const wsServer = new WebSocketServer(
+    let wsServer = new WebSocketServer(
         {
             server: httpServer,
             
@@ -44,7 +44,7 @@ async function startApolloServer() {
 
 startApolloServer();
 
-const port = 4004;
+let port = 4004;
 httpServer.listen(port, () => {
     console.log(`Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);
 });
