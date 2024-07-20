@@ -14,7 +14,7 @@ let pubsub = new PubSub();
 let schema = makeExecutableSchema({ typeDefs, resolvers });
 
 let express = require("express")
-let app: any = express();
+let app = express();
 
 let httpServer = createServer(app);
 let cors = require("cors")
