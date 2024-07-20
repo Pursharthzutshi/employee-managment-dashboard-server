@@ -14,6 +14,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.1",
     "PubSub": "^4.0.0",
+    "socket.io": "^4.7.5",
     "ws": "^8.18.0"
   },
   "devDependencies": {
