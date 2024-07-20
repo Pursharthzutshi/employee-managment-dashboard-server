@@ -2,16 +2,21 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 import { PubSub, PubSubEngine } from "graphql-subscriptions";
-import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, showLoggedInEmployeesLeaveDetailsDataParametersProps, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
+import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, showAllChatsTypes, showLoggedInEmployeesLeaveDetailsDataParametersProps, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
+import { subscribe } from "diagnostics_channel";
 require('dotenv').config()
 console.log(process.env)
 
-const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adminSecretKey, employeeLeaveTable } = require("../models/db")
+
+const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adminSecretKey, employeeLeaveTable, chatInfoTable } = require("../models/db")
 const secret = crypto.randomBytes(64).toString('hex');
 
 mongoose.connect(`mongodb+srv://${process.env.dbUsername}:${process.env.dbPassword}@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
     // console.log(res);
 })
+
+const SEND_MESSAGE_CHANNEL = "SEND_MESSAGE_CHANNEL"
+const pubsub = new PubSub();
 
 export const resolvers = {
     Query: {
@@ -48,9 +53,30 @@ export const resolvers = {
             const employeeLeaveDetails = await employeeLeaveTable.find({ uid: args.showLoggedInEmployeesLeaveDetailsDataParameters.uid }).sort()
             // console.log(employeeLeaveDetails)
             return employeeLeaveDetails
+        },
+        async showAllChats(parent: undefined, args: { showAllChatsParamters: showAllChatsTypes }) {
+
+            const showChats = await employeesAccountInfoTable.find()
+            const filtershowChats = await showChats.filter((chatsId: any) => chatsId.uid !== args.showAllChatsParamters.uid)
+
+            console.log(showChats)
+            return showChats
+        },
+
+        async showSenderReceiverChat(parent: undefined, args: { showSenderReceiverChatParameters: any }) {
+
+            const senderId = args.showSenderReceiverChatParameters.senderId
+            const receiverId = args.showSenderReceiverChatParameters.receiverId
+
+            const showChats = await chatInfoTable.find({
+                $or: [
+                    { senderId: senderId, receiverId: receiverId },
+                    { senderId: receiverId, receiverId: senderId }
+                ]
+            })
+            console.log(showChats)
+            return showChats
         }
-
-
     },
     Mutation: {
 
@@ -162,7 +188,7 @@ export const resolvers = {
 
 
         },
-        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; },context:any) {
+        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }, context: any) {
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.adminLoginParameters.emailId })
 
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
@@ -381,7 +407,7 @@ export const resolvers = {
 
             // const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })
             // console.log(findEmployeeName)
-            await employeeLeaveTable.updateOne({ uid: args.updateEmployeeLeaveStatusParameters.uid, employeeLeaveApplicationUid: args.updateEmployeeLeaveStatusParameters.employeeLeaveApplicationUid }, { $set: { leaveStatus: args.updateEmployeeLeaveStatusParameters.leaveStatus,leaveApprovedButtonsStatus: args.updateEmployeeLeaveStatusParameters.leaveApprovedButtonsStatus} })
+            await employeeLeaveTable.updateOne({ uid: args.updateEmployeeLeaveStatusParameters.uid, employeeLeaveApplicationUid: args.updateEmployeeLeaveStatusParameters.employeeLeaveApplicationUid }, { $set: { leaveStatus: args.updateEmployeeLeaveStatusParameters.leaveStatus, leaveApprovedButtonsStatus: args.updateEmployeeLeaveStatusParameters.leaveApprovedButtonsStatus } })
 
 
             return {
@@ -389,11 +415,28 @@ export const resolvers = {
                 success: true,
                 message: "Updated Status Successfully"
             }
+        },
+        async sendMessage(parent: undefined, args: { sendMessageParameters: any }) {
+
+            // console.log(args)
+
+            const insertMessage = await chatInfoTable.insertMany({ ...args.sendMessageParameters })
+            console.log(insertMessage[0])
+            pubsub.publish(SEND_MESSAGE_CHANNEL, { messageSent: insertMessage[0] })
+            return insertMessage;
         }
+
 
     },
 
-
+    Subscription: {
+        messageSent: {
+            subscribe: (root: any, args: any) => {
+                console.log(args);
+                return pubsub.asyncIterator(SEND_MESSAGE_CHANNEL);
+            }
+        }
+    }
 }
 
 

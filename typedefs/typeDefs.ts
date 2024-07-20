@@ -40,6 +40,14 @@ leaveApprovedButtonsStatus:Boolean
 leaveStatus:Boolean
 }
 
+
+type chatInfoTable{
+uid: ID!
+senderId: String
+receiverId: String
+message: String
+}
+
 input updateEmployeeLeaveStatusInput{
 uid:ID!
 employeeLeaveApplicationUid:ID!
@@ -136,11 +144,24 @@ input showLoggedInEmployeesLeaveDetailsDataInput{
 uid:ID!
 }
 
+input showAllChatsInput{
+uid:ID!
+}
+
+input showSenderReceiverChatInput{
+senderId: String
+receiverId: String
+}
+
 type Query{
 getUser:[signUpTable]
 fetchEmailUsersIds:[signUpTable]
 fetchEmployeesTaskDetails:[employeesTaskTable]
 showAllEmployee:[signUpTable]
+showAllChats(showAllChatsParamters: showAllChatsInput!):[signUpTable]
+
+showSenderReceiverChat(showSenderReceiverChatParameters:showSenderReceiverChatInput!):[chatInfoTable]
+
 showAllAdmin:[adminSignUpTable]
 fetchAdminProfileDetails(fetchAdminProfileDetailsParameters:fetchAdminProfileDetailsInput!):[adminSignUpTable]
 fetchEmployeesLeaveDetails:[employeeLeaveInfoTable]
@@ -223,6 +244,13 @@ success:Boolean
 message:String
 }
 
+input sendMessageInput{
+uid:ID!
+senderId: String
+receiverId: String
+message: String
+}
+
 type Mutation{
 updateEmployeeOfTheMonth(updateEmployeeOfTheMonthParameters:updateEmployeeOfTheMonthInput!):[signUpTable]
 deleteEmployeeAccount(deleteEmployeeAccountParameters:deleteEmployeeAccountInput!):deleletEmployeeAccountResponse!
@@ -249,7 +277,14 @@ insertEmployeesLeaveDetails(insertEmployeesLeaveDetailsParameters:insertEmployee
 
 updateEmployeeLeaveStatus(updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusInput!):updateEmployeeLeaveStatusResponse!
 
+sendMessage(sendMessageParameters:sendMessageInput!):[chatInfoTable]
+
 }
+
+type Subscription{
+messageSent:chatInfoTable
+}
+
 `
 
 module.exports = typeDefs

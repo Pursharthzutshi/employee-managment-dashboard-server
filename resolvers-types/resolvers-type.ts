@@ -92,6 +92,11 @@ export type updateEmployeeLeaveStatusParametersType={
 
 }
 
+export type  showAllChatsTypes = {
+    senderId: any
+    receiverId: any
+    uid: string; 
+}
 
 // const checkEmptyFields = args.insertEmployeesLeaveDetailsParameters.date === "" || args.insertEmployeesLeaveDetailsParameters.leaveReason === "" ||
 // args.insertEmployeesLeaveDetailsParameters.leaveStatus === ""

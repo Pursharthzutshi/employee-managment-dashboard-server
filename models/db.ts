@@ -59,6 +59,13 @@ const employeesLeaveDetailsSchema = new mongoose.Schema({
     leaveApprovedButtonsStatus: Boolean
 })
 
+const chatInfoSchema = new mongoose.Schema({
+    uid: String,
+    senderId: String,
+    receiverId: String,
+    message: String
+})
+
 // type usersSignUpInfoTableProps = {
 //     usersSignUpInfoTable=()=> void
 // }
@@ -75,5 +82,6 @@ const employeesTaskTable = mongoose.model("employeesTaskInfo", employeesTaskSche
 
 const employeeLeaveTable = mongoose.model("employeeLeaveInfo", employeesLeaveDetailsSchema, "employeeLeaveInfo")
 
+const chatInfoTable = mongoose.model("chatInfoSchema", chatInfoSchema, "chatInfoSchema")
 
-module.exports = { employeesAccountInfoTable, adminSignUpInfoTable, adminSecretKey, employeesTaskTable, employeeLeaveTable, employeesAccountInfoArchiveTable }
+module.exports = { employeesAccountInfoTable, adminSignUpInfoTable, adminSecretKey, employeesTaskTable, employeeLeaveTable, employeesAccountInfoArchiveTable, chatInfoTable }
