@@ -5,7 +5,6 @@ import { PubSub, PubSubEngine } from "graphql-subscriptions";
 import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, showAllChatsTypes, showLoggedInEmployeesLeaveDetailsDataParametersProps, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
 import { subscribe } from "diagnostics_channel";
 require('dotenv').config()
-console.log(process.env)
 
 
 const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adminSecretKey, employeeLeaveTable, chatInfoTable } = require("../models/db")
@@ -38,20 +37,16 @@ export const resolvers = {
             return allAdmin
         },
         async fetchAdminProfileDetails(parent: undefined, args: { fetchAdminProfileDetailsParameters: FetchAdminProfileDetailsParametersProps }) {
-            console.log(args)
             const allAdmin = await adminSignUpInfoTable.find({ uid: args.fetchAdminProfileDetailsParameters.uid });
             return allAdmin
         },
 
         async fetchEmployeesLeaveDetails(parent: undefined, args: { fetchAdminProfileDetailsParameters: FetchAdminProfileDetailsParametersProps }) {
             const employeeLeaveDetails = await employeeLeaveTable.find({})
-            console.log(employeeLeaveDetails)
             return employeeLeaveDetails
         },
         async showLoggedInEmployeesLeaveDetailsData(parent: undefined, args: { showLoggedInEmployeesLeaveDetailsDataParameters: showLoggedInEmployeesLeaveDetailsDataParametersProps }) {
-            console.log(args)
             const employeeLeaveDetails = await employeeLeaveTable.find({ uid: args.showLoggedInEmployeesLeaveDetailsDataParameters.uid }).sort()
-            // console.log(employeeLeaveDetails)
             return employeeLeaveDetails
         },
         async showAllChats(parent: undefined, args: { showAllChatsParamters: showAllChatsTypes }) {
@@ -59,7 +54,6 @@ export const resolvers = {
             const showChats = await employeesAccountInfoTable.find()
             const filtershowChats = await showChats.filter((chatsId: any) => chatsId.uid !== args.showAllChatsParamters.uid)
 
-            console.log(showChats)
             return showChats
         },
 
@@ -74,14 +68,12 @@ export const resolvers = {
                     { senderId: receiverId, receiverId: senderId }
                 ]
             })
-            console.log(showChats)
             return showChats
         }
     },
     Mutation: {
 
         async createUserSignUp(parent: undefined, args: { userSignUpParameters: createUserSignUpProps; }) {
-            console.log(args.userSignUpParameters)
             const existingEmailId = await employeesAccountInfoTable.findOne({ emailId: args.userSignUpParameters.emailId })
 
             const checkEmptyFields = args.userSignUpParameters.emailId === "" || args.userSignUpParameters.name === "" ||
@@ -113,9 +105,7 @@ export const resolvers = {
         },
         // createAdmin
         async createAdminSignUp(parent: undefined, args: { adminSignUpParameters: adminSignUpProps; }) {
-            // console.log(args.adminSignUpParameters)
-            // if(args.adminSignUpParameters)
-            console.log(args.adminSignUpParameters.adminSecretKey)
+    
 
             const checkAdminKey = await adminSecretKey.findOne({ adminSecret: args.adminSignUpParameters.adminSecretKey })
 
@@ -151,10 +141,8 @@ export const resolvers = {
         async createUserLogin(parent: undefined, args: { userLoginParameters: { emailId: String, password: String }; }) {
 
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
-            console.log(args)
             const user = await employeesAccountInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
 
-            console.log(user)
             if (!user) {
 
                 return {
@@ -233,10 +221,8 @@ export const resolvers = {
             }
         },
         async updateEmployeeOfTheMonth(parent: undefined, args: { updateEmployeeOfTheMonthParameters: { uid: String; employeeOfTheMonth: Boolean; }; }) {
-            // console.log(args)
 
             const findAlreadyExistingEmployeeOfTheMonth = await employeesAccountInfoTable.findOne({ employeeOfTheMonth: true })
-            // console.log(findAlreadyExistingEmployeeOfTheMonth)
 
             if (findAlreadyExistingEmployeeOfTheMonth) {
                 await employeesAccountInfoTable.updateOne({ employeeOfTheMonth: true }, { $set: { employeeOfTheMonth: false } })
@@ -247,7 +233,6 @@ export const resolvers = {
         },
 
         async deleteEmployeeAccount(parent: undefined, args: { deleteEmployeeAccountParameters: { uid: String }; }) {
-            console.log(args)
             const deleteEmployee = await employeesAccountInfoTable.deleteOne({ uid: args.deleteEmployeeAccountParameters.uid })
 
             return {
@@ -261,7 +246,6 @@ export const resolvers = {
             const emptyFieldValues = args.employeesTaskParameters.name === "" || args.employeesTaskParameters.emailId === null ||
                 args.employeesTaskParameters.taskDesc === "" || args.employeesTaskParameters.deadLine === ""
 
-            console.log(args)
             if (emptyFieldValues) {
                 return {
                     success: false,
@@ -294,7 +278,6 @@ export const resolvers = {
 
         async editEmployeesTask(parent: undefined, args: { editEmployeesTaskParameter: updateTaskFieldsProps }) {
 
-            console.log(args);
 
             const checkEmptyFields = args.editEmployeesTaskParameter.name !== "" && args.editEmployeesTaskParameter.taskDesc !== ""
                 && args.editEmployeesTaskParameter.deadLine !== "" && !args.editEmployeesTaskParameter.emailId
@@ -326,13 +309,11 @@ export const resolvers = {
         },
 
         async updateSignUpStatus(parent: undefined, args: { updateSignUpStatusParameter: { uid: String; status: Boolean; }; }) {
-            console.log(args);
             const updateStatus = await employeesAccountInfoTable.updateMany({ uid: args.updateSignUpStatusParameter.uid }, { $set: { status: args.updateSignUpStatusParameter.status } })
             return updateStatus
         },
 
         async updateName(parent: undefined, args: { updateProfileNameParameters: { uid: String, name: String } }) {
-            console.log(args)
             if (args.updateProfileNameParameters.name === "") {
                 return {
                     updateNameData: null,
@@ -349,43 +330,35 @@ export const resolvers = {
             }
         },
         async updatePassword(parent: undefined, args: { updateProfilePasswordParameters: { uid: string, password: string } }) {
-            console.log(args)
             await adminSignUpInfoTable.updateMany({ uid: args.updateProfilePasswordParameters.uid }, { $set: { password: args.updateProfilePasswordParameters.password } })
             return [args]
         },
 
         async fetchLoggedInEmployeeAssignedTaskDetails(parent: undefined, args: fetchLoggedInEmployeeAssignedTaskDetailsProps) {
-            // console.log(args)
             const fetchLoggedInEmployeeTask = await employeesAccountInfoTable.findOne({ uid: args.fetchLoggedInEmployeeAssignedTaskDetailsParameters.uid })
-            // console.log(fetchLoggedInEmployeeTask.emailId)
 
             const findFetchedLoggedInEmailId = await employeesTaskTable.find({})
             const assignedTasks: fetchLoggedInEmployeeAssignedTaskDetailsParametersType[] = []
 
-            // console.log(findFetchedLoggedInEmailId)
 
             await findFetchedLoggedInEmailId.map(async (data: fetchLoggedInEmployeeAssignedTaskDetailsParametersType) => {
-                console.log(data)
                 await data.emailId.map((val: String) => {
                     if (val === fetchLoggedInEmployeeTask.emailId) {
                         console.log(data)
                         assignedTasks.push(data)
                     }
-                    // console.log(assignedTasks)
                 })
             })
             return assignedTasks
         },
 
         async insertEmployeesLeaveDetails(parent: undefined, args: insertEmployeesLeaveDetailsProps) {
-            console.log(args);
 
             const checkEmptyFields = args.insertEmployeesLeaveDetailsParameters.date === "" || args.insertEmployeesLeaveDetailsParameters.leaveReason === "" ||
                 args.insertEmployeesLeaveDetailsParameters.leaveStatus === ""
 
             const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.insertEmployeesLeaveDetailsParameters.uid })
 
-            console.log(findEmployeeName[0].name);
             if (checkEmptyFields) {
                 return {
                     employeeLeaveData: null,
@@ -403,7 +376,6 @@ export const resolvers = {
         },
 
         async updateEmployeeLeaveStatus(parent: undefined, args: updateEmployeeLeaveStatusProps) {
-            console.log(args);
 
             // const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })
             // console.log(findEmployeeName)
@@ -418,10 +390,8 @@ export const resolvers = {
         },
         async sendMessage(parent: undefined, args: { sendMessageParameters: any }) {
 
-            // console.log(args)
 
             const insertMessage = await chatInfoTable.insertMany({ ...args.sendMessageParameters })
-            console.log(insertMessage[0])
             pubsub.publish(SEND_MESSAGE_CHANNEL, { messageSent: insertMessage[0] })
             return insertMessage;
         }
@@ -432,7 +402,6 @@ export const resolvers = {
     Subscription: {
         messageSent: {
             subscribe: (root: any, args: any) => {
-                console.log(args);
                 return pubsub.asyncIterator(SEND_MESSAGE_CHANNEL);
             }
         }
