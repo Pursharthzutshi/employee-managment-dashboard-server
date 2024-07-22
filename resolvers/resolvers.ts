@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 import { PubSub, PubSubEngine } from "graphql-subscriptions";
-import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, showAllChatsTypes, showLoggedInEmployeesLeaveDetailsDataParametersProps, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
+import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, sendMessageType, sendMessageTypeIndicatorType, showAllChatsTypes, showLoggedInEmployeesLeaveDetailsDataParametersProps, showSenderReceiverChatType, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
 import { subscribe } from "diagnostics_channel";
 require('dotenv').config()
 
@@ -15,6 +15,8 @@ mongoose.connect(`mongodb+srv://${process.env.dbUsername}:${process.env.dbPasswo
 })
 
 const SEND_MESSAGE_CHANNEL = "SEND_MESSAGE_CHANNEL"
+const TYPE_SEND_MESSAGE_CHANNEL = "TYPE_SEND_MESSAGE_CHANNEL"
+
 const pubsub = new PubSub();
 
 export const resolvers = {
@@ -52,12 +54,24 @@ export const resolvers = {
         async showAllChats(parent: undefined, args: { showAllChatsParamters: showAllChatsTypes }) {
 
             const showChats = await employeesAccountInfoTable.find()
-            const filtershowChats = await showChats.filter((chatsId: any) => chatsId.uid !== args.showAllChatsParamters.uid)
+
+            const joinTables = await employeesAccountInfoTable.aggregate([
+                {
+                    $lookup: {
+                        from:"adminSignUpInfoInfo",
+                        localField:"_id",
+                        foreignField: "_id",
+                        as:"info"
+                    }
+                }
+            ])
+            
+            // const filtershowChats = await showChats.filter((chatsId: string) => chatsId.uid !== args.showAllChatsParamters.uid)
 
             return showChats
         },
 
-        async showSenderReceiverChat(parent: undefined, args: { showSenderReceiverChatParameters: any }) {
+        async showSenderReceiverChat(parent: undefined, args: { showSenderReceiverChatParameters: showSenderReceiverChatType }) {
 
             const senderId = args.showSenderReceiverChatParameters.senderId
             const receiverId = args.showSenderReceiverChatParameters.receiverId
@@ -105,7 +119,7 @@ export const resolvers = {
         },
         // createAdmin
         async createAdminSignUp(parent: undefined, args: { adminSignUpParameters: adminSignUpProps; }) {
-    
+
 
             const checkAdminKey = await adminSecretKey.findOne({ adminSecret: args.adminSignUpParameters.adminSecretKey })
 
@@ -388,21 +402,33 @@ export const resolvers = {
                 message: "Updated Status Successfully"
             }
         },
-        async sendMessage(parent: undefined, args: { sendMessageParameters: any }) {
+        async sendMessage(parent: undefined, args: { sendMessageParameters: sendMessageType }) {
 
 
             const insertMessage = await chatInfoTable.insertMany({ ...args.sendMessageParameters })
             pubsub.publish(SEND_MESSAGE_CHANNEL, { messageSent: insertMessage[0] })
             return insertMessage;
-        }
+        },
 
+        async sendMessageTypeIndicator(parent: undefined, args: { sendMessageTypeIndicatorParameters: sendMessageTypeIndicatorType }) {
+    
+            pubsub.publish(TYPE_SEND_MESSAGE_CHANNEL, { typingIndicator: {...args.sendMessageTypeIndicatorParameters.isTyping} })
+
+            return { success: true };
+
+        }
 
     },
 
     Subscription: {
         messageSent: {
-            subscribe: (root: any, args: any) => {
+            subscribe: (root: undefined, args: undefined) => {
                 return pubsub.asyncIterator(SEND_MESSAGE_CHANNEL);
+            },
+            typingIndicator: {
+                subscribe: (root: undefined, args: undefined) => {
+                    return pubsub.asyncIterator(TYPE_SEND_MESSAGE_CHANNEL);
+                }
             }
         }
     }

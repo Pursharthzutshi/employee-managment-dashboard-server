@@ -7,7 +7,7 @@ export type createUserSignUpProps = {
     status: boolean
     department: string
     employeeOfTheMonth: boolean
-    reTypePassword:string
+    reTypePassword: string
 }
 
 
@@ -29,12 +29,12 @@ export type adminSignUpProps = {
 }
 
 export type fetchLoggedInEmployeeAssignedTaskDetailsParametersType = {
-    
-    uid:string
-    name:string
-    emailId:string[]
-    taskDesc:string
-    deadline:string
+
+    uid: string
+    name: string
+    emailId: string[]
+    taskDesc: string
+    deadline: string
 }
 
 
@@ -46,20 +46,20 @@ export type fetchLoggedInEmployeeAssignedTaskDetailsProps = {
 
 
 export type updateTaskFieldsProps = {
-    uid?:string
-    name?: string 
+    uid?: string
+    name?: string
     taskDesc?: string | any
     deadLine?: string
     emailId?: string[]
 }
 
-export type  FetchAdminProfileDetailsParametersProps = {
-    uid: string; 
+export type FetchAdminProfileDetailsParametersProps = {
+    uid: string;
 }
 
 
 export type findFetchedLoggedInEmailIdProps = {
-    emailId:string
+    emailId: string
 }
 
 
@@ -76,27 +76,45 @@ export type insertEmployeesLeaveDetailsProps = {
 }
 
 export type showLoggedInEmployeesLeaveDetailsDataParametersProps = {
-    uid:string
+    uid: string
 }
 
 export type updateEmployeeLeaveStatusProps = {
-    updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusParametersType
+    updateEmployeeLeaveStatusParameters: updateEmployeeLeaveStatusParametersType
 }
 
-export type updateEmployeeLeaveStatusParametersType={
-    updateEmployeeLeaveStatusParameters:updateEmployeeLeaveStatusProps
-    uid:string
-    employeeLeaveApplicationUid:string
-    leaveStatus:boolean
-    leaveApprovedButtonsStatus:boolean
+export type updateEmployeeLeaveStatusParametersType = {
+    updateEmployeeLeaveStatusParameters: updateEmployeeLeaveStatusProps
+    uid: string
+    employeeLeaveApplicationUid: string
+    leaveStatus: boolean
+    leaveApprovedButtonsStatus: boolean
 
 }
 
-export type  showAllChatsTypes = {
-    senderId: any
-    receiverId: any
-    uid: string; 
+export type showAllChatsTypes = {
+    senderId: string
+    receiverId: string
+    uid: string;
 }
 
+export type sendMessageType = {
+    uid: string;
+    senderId: string
+    receiverId: string
+    message: string
+}
+
+export type sendMessageTypeIndicatorType = {
+    isTyping: boolean[]
+    senderId: string
+    receiverId: string
+}
+
+
+export type showSenderReceiverChatType = {
+    senderId: string
+    receiverId: string
+}
 // const checkEmptyFields = args.insertEmployeesLeaveDetailsParameters.date === "" || args.insertEmployeesLeaveDetailsParameters.leaveReason === "" ||
 // args.insertEmployeesLeaveDetailsParameters.leaveStatus === ""

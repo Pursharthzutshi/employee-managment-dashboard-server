@@ -251,6 +251,16 @@ receiverId: String
 message: String
 }
 
+input sendMessageTypeIndicatorInput{
+senderId: String
+receiverId: String
+isTyping:Boolean
+}
+
+type sendMessageTypeIndicatorResponse{
+success: Boolean
+}
+
 type Mutation{
 updateEmployeeOfTheMonth(updateEmployeeOfTheMonthParameters:updateEmployeeOfTheMonthInput!):[signUpTable]
 deleteEmployeeAccount(deleteEmployeeAccountParameters:deleteEmployeeAccountInput!):deleletEmployeeAccountResponse!
@@ -279,6 +289,7 @@ updateEmployeeLeaveStatus(updateEmployeeLeaveStatusParameters:updateEmployeeLeav
 
 sendMessage(sendMessageParameters:sendMessageInput!):[chatInfoTable]
 
+sendMessageTypeIndicator(sendMessageTypeIndicatorParameters:sendMessageTypeIndicatorInput!):sendMessageTypeIndicatorResponse!
 }
 
 type Subscription{
