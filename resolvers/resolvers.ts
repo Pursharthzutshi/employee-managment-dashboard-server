@@ -12,7 +12,7 @@ const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable, adm
 const secret = crypto.randomBytes(64).toString('hex');
 
 mongoose.connect(`mongodb+srv://${process.env.dbUsername}:${process.env.dbPassword}@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
-    // console.log(res);
+    console.log(res);
 })
 
 const SEND_MESSAGE_CHANNEL = "SEND_MESSAGE_CHANNEL"
@@ -359,7 +359,6 @@ export const resolvers = {
             await findFetchedLoggedInEmailId.map(async (data: fetchLoggedInEmployeeAssignedTaskDetailsParametersType) => {
                 await data.emailId.map((val: String) => {
                     if (val === fetchLoggedInEmployeeTask.emailId) {
-                        console.log(data)
                         assignedTasks.push(data)
                     }
                 })
@@ -392,8 +391,6 @@ export const resolvers = {
 
         async updateEmployeeLeaveStatus(parent: undefined, args: updateEmployeeLeaveStatusProps) {
 
-            // const findEmployeeName = await employeesAccountInfoTable.find({ uid: args.updateEmployeeLeaveStatusParameters.uid })
-            // console.log(findEmployeeName)
             await employeeLeaveTable.updateOne({ uid: args.updateEmployeeLeaveStatusParameters.uid, employeeLeaveApplicationUid: args.updateEmployeeLeaveStatusParameters.employeeLeaveApplicationUid }, { $set: { leaveStatus: args.updateEmployeeLeaveStatusParameters.leaveStatus, leaveApprovedButtonsStatus: args.updateEmployeeLeaveStatusParameters.leaveApprovedButtonsStatus } })
 
 
@@ -427,8 +424,6 @@ export const resolvers = {
                     return pubsub.asyncIterator(SEND_MESSAGE_CHANNEL);
                 },
                 (payload, variables) => {
-                    console.log('Payload Sender ID:', payload.messageSent.senderId);
-                    console.log('Variables Sender ID:', variables.messageSendParameters.uid);
                     return (payload.messageSent.senderId === variables.messageSendParameters.senderId &&
                         payload.messageSent.receiverId === variables.messageSendParameters.receiverId) ||
                         (payload.messageSent.senderId === variables.messageSendParameters.receiverId &&
