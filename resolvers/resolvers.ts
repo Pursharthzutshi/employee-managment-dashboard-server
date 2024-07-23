@@ -4,6 +4,7 @@ import crypto from "crypto"
 import { PubSub, PubSubEngine, withFilter } from "graphql-subscriptions";
 import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, sendMessageType, sendMessageTypeIndicatorType, showAllChatsTypes, showLoggedInEmployeesLeaveDetailsDataParametersProps, showSenderReceiverChatType, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
 import { subscribe } from "diagnostics_channel";
+import { Context } from "vm";
 require('dotenv').config()
 
 
@@ -190,7 +191,7 @@ export const resolvers = {
 
 
         },
-        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }, context: any) {
+        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }, context: Context) {
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.adminLoginParameters.emailId })
 
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
@@ -428,7 +429,6 @@ export const resolvers = {
                 (payload, variables) => {
                     console.log('Payload Sender ID:', payload.messageSent.senderId);
                     console.log('Variables Sender ID:', variables.messageSendParameters.uid);
-                    // Ensure that messages are only sent to the relevant sender
                     return (payload.messageSent.senderId === variables.messageSendParameters.senderId &&
                         payload.messageSent.receiverId === variables.messageSendParameters.receiverId) ||
                         (payload.messageSent.senderId === variables.messageSendParameters.receiverId &&

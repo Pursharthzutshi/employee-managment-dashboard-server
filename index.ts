@@ -1,3 +1,4 @@
+import { Application } from "express";
 
 const { ApolloServer } = require('apollo-server-express');
 const { createServer } = require('http');
@@ -14,7 +15,7 @@ const pubsub = new PubSub();
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 let express = require("express")
-const app: any = express();
+const app: Application = express();
 
 const httpServer = createServer(app);
 const cors = require("cors")
