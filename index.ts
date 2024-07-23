@@ -45,7 +45,7 @@ async function startApolloServer() {
 
 startApolloServer();
 
-const port = 4004;
+const port = 4005;
 httpServer.listen(port, () => {
     console.log(`Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);
 });
