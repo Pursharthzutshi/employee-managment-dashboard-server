@@ -294,13 +294,8 @@ sendMessage(sendMessageParameters:sendMessageInput!):[chatInfoTable]
 sendMessageTypeIndicator(sendMessageTypeIndicatorParameters:sendMessageTypeIndicatorInput!):sendMessageTypeIndicatorResponse!
 }
 
-input messageSendInput{
-senderId:String
-receiverId:String
-}
-
 type Subscription{
-messageSent(messageSendParameters:messageSendInput!):chatInfoTable
+  messageSent(senderId: ID!, receiverId: ID!): [chatInfoTable]
 }
 
 `

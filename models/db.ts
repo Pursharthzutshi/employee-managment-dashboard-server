@@ -63,7 +63,8 @@ const chatInfoSchema = new mongoose.Schema({
     uid: String,
     senderId: String,
     receiverId: String,
-    message: String
+    message: String,
+    date: String
 })
 
 // type usersSignUpInfoTableProps = {

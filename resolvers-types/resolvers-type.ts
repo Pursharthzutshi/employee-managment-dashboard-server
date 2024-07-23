@@ -103,6 +103,7 @@ export type sendMessageType = {
     senderId: string
     receiverId: string
     message: string
+    date:string
 }
 
 export type sendMessageTypeIndicatorType = {

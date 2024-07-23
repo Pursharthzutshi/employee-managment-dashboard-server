@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
-import { PubSub, PubSubEngine, withFilter } from "graphql-subscriptions";
+import { PubSub, PubSubEngine } from "graphql-subscriptions";
 import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps, FetchAdminProfileDetailsParametersProps, fetchLoggedInEmployeeAssignedTaskDetailsParametersType, fetchLoggedInEmployeeAssignedTaskDetailsProps, insertEmployeesLeaveDetailsProps, sendMessageType, sendMessageTypeIndicatorType, showAllChatsTypes, showLoggedInEmployeesLeaveDetailsDataParametersProps, showSenderReceiverChatType, updateEmployeeLeaveStatusProps, updateTaskFieldsProps } from "../resolvers-types/resolvers-type";
 import { subscribe } from "diagnostics_channel";
 require('dotenv').config()
@@ -403,9 +403,12 @@ export const resolvers = {
             }
         },
         async sendMessage(parent: undefined, args: { sendMessageParameters: sendMessageType }) {
+            const { senderId, receiverId, message, date } = args.sendMessageParameters;
 
             const insertMessage = await chatInfoTable.insertMany({ ...args.sendMessageParameters })
-            pubsub.publish(SEND_MESSAGE_CHANNEL, { messageSent: insertMessage[0] })
+            pubsub.publish(`${SEND_MESSAGE_CHANNEL}_${senderId}_${receiverId}`, {
+                messageSent: { senderId, receiverId, message, date },
+            });
             return insertMessage;
         },
 
@@ -421,22 +424,16 @@ export const resolvers = {
 
     Subscription: {
         messageSent: {
-            subscribe: withFilter(
-                (root, args, context) => {
-                    return pubsub.asyncIterator(SEND_MESSAGE_CHANNEL);
-                },
-                (payload, variables) => {
-                    console.log('Payload Sender ID:', payload.messageSent.senderId);
-                    console.log('Variables Sender ID:', variables.messageSendParameters.uid);
-                    // Ensure that messages are only sent to the relevant sender
-                    return (payload.messageSent.senderId === variables.messageSendParameters.senderId &&
-                        payload.messageSent.receiverId === variables.messageSendParameters.receiverId) ||
-                        (payload.messageSent.senderId === variables.messageSendParameters.receiverId &&
-                            payload.messageSent.receiverId === variables.messageSendParameters.senderId)
+            subscribe: (root:undefined, { senderId, receiverId }:any) => {
+                return pubsub.asyncIterator(`${SEND_MESSAGE_CHANNEL}_${senderId}_${receiverId}`);
+            },
+            typingIndicator: {
+                subscribe: (root: undefined, args: undefined) => {
+                    return pubsub.asyncIterator(TYPE_SEND_MESSAGE_CHANNEL);
                 }
-            ),
-        },
-    },
+            }
+        }
+    }
 }
 
 
