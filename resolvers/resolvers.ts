@@ -48,7 +48,8 @@ export const resolvers = {
             return employeeLeaveDetails
         },
         async showLoggedInEmployeesLeaveDetailsData(parent: undefined, args: { showLoggedInEmployeesLeaveDetailsDataParameters: showLoggedInEmployeesLeaveDetailsDataParametersProps }) {
-            const employeeLeaveDetails = await employeeLeaveTable.find({ uid: args.showLoggedInEmployeesLeaveDetailsDataParameters.uid }).sort()
+            const employeeLeaveDetails = await employeeLeaveTable.find({ uid: args.showLoggedInEmployeesLeaveDetailsDataParameters.uid })
+            console.log(employeeLeaveDetails)
             return employeeLeaveDetails
         },
         async showAllChats(parent: undefined, args: { showAllChatsParamters: showAllChatsTypes }) {
