@@ -8,10 +8,14 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": [
-    "server/**/*.ts",
-    "index.ts"
-  ],
+ "include": [
+  "server/**/*.ts",
+  "typedefs/**/*.ts",
+  "resolvers/**/*.ts",
+  "models/**/*.ts",
+  ".env/**/*.ts",
+  "index.ts"
+],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"

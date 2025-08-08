@@ -1,4 +1,3 @@
-import { Application } from "express";
 
 const { ApolloServer } = require('apollo-server-express');
 const { createServer } = require('http');
@@ -15,7 +14,7 @@ const pubsub = new PubSub();
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 let express = require("express")
-const app: Application = express();
+const app = express();
 
 const httpServer = createServer(app);
 const cors = require("cors")
@@ -25,7 +24,8 @@ const apolloServer = new ApolloServer({
     context: ({ req, res }:{req:Express.Request,res:Express.Response}) => ({ req, res, pubsub }),
 });
 app.use(cors({
-    url: "https://employee-managment-dashboard-client.vercel.app",
+    url: process.env.URL,
+    // url: "https://employee-managment-dashboard-client.vercel.app",
 }))
 
 async function startApolloServer() {
